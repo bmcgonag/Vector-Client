@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd /opt/
+cd /opt/WiregUIrd
 
 ./WireguardUI
