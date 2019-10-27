@@ -1,4 +1,4 @@
-# WireguardUIClient
+# Wireguard UI Client
 A client UI for Wireguard on Linux (may work on Mac and Windows as well)
 
 I made this because, while it's great to be proficient on the shell terminal, it's just nice to have a GUI app sometimes. Something that simply grabs your attention and says, "Hey, I'm here, and connected!."  Sometimes, maybe it says, "Hey, ummmm, I'm not connected...but it's easy to connect me if you want."
