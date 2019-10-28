@@ -7,6 +7,26 @@ Anyway, I just want linux to be a first class citizen along with the rest of the
 
 I 100% appreciate what Wireguard is doing for VPNs and encryption, so please don't misunderstand.  I just wanted to do something to help out. 
 
+## Installation
+
+Use this command 
+
+`curl https://github.com/bmcgonag/WireguardUIClient/releases/download/0.1.0/install_wireguard_gui_client.sh | sh`
+
+Or, 
+
+Download the script from 
+
+https://github.com/bmcgonag/WireguardUIClient/releases/download/0.1.0/install_wireguard_gui_client.sh
+
+and use the command
+
+`. ./install_wireguard_gui_clidnt.sh`
+
+or 
+
+`sh ./install_wireguard_gui_client.sh`
+
 ## Me
 I'm not a programmer by trade.  I'm a hobbyist (on my best day), so take this for what it is.  If you have issues, please let me know, and I'll see what I can do to fix it. 
 
