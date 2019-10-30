@@ -25,7 +25,7 @@
 var onOff = function() {
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     if (isChecked == true) {
-        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + configs.wg_interface, 
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + configs.wg_interface[0], 
             function (data) {
                 // console.log("Data from bringing up Wireguard Interface: ");
                 // console.dir(data);
@@ -36,7 +36,7 @@ var onOff = function() {
             }
         );
     } else {
-        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick down ' + configs.wg_interface,
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick down ' + configs.wg_interface[0],
             function(data) {
                 // console.log("Data from taking down Wireguard Interface: ");
                 // console.dir(data);
@@ -106,7 +106,19 @@ Neutralino.init({
 var importConfig = function() {
     Neutralino.os.dialogOpen('Open a file..', 
         function (data) {
-            // console.log(data);
+            // console.log(data.file);
+            let lastPart = data.file.split("/").pop();
+            let interface = lastPart.substr(0, lastPart.indexOf('.'));
+            // console.log("Interface name: " + interface);
+            console.log("sed -i 's/]/,\"" +interface + "\" &/g' ./config.js");
+            Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" +interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
+                function (data) {
+                    console.log(data.stdout);
+                }, 
+                function () {
+                    console.error("error");
+                }
+            );
             mvConfig(data.file);
         },
         function () {
