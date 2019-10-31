@@ -24,8 +24,9 @@
 // toggle the vpn based on the state of the switch (checkbox).
 var onOff = function() {
     let isChecked = document.getElementById("toggleOnOrOff").checked;
+    let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     if (isChecked == true) {
-        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + configs.wg_interface[0], 
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue, 
             function (data) {
                 // console.log("Data from bringing up Wireguard Interface: ");
                 // console.dir(data);
@@ -36,7 +37,7 @@ var onOff = function() {
             }
         );
     } else {
-        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick down ' + configs.wg_interface[0],
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick down ' + interfaceValue,
             function(data) {
                 // console.log("Data from taking down Wireguard Interface: ");
                 // console.dir(data);
@@ -56,7 +57,7 @@ var getIpAddress = function() {
             // console.log("Got data back: " + data.stdout);
             let ipAddress = data.stdout;
             document.getElementById('output').innerText = ipAddress;
-
+            buildIfaceList();
         },
         function() {
             console.error("Error");
@@ -66,7 +67,7 @@ var getIpAddress = function() {
 
 // check connectivity
 var checkConnection = function() {
-    Neutralino.os.runCommand('ip addr show ' + configs.wg_interface,
+    Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[0],
         function(data) {
             let info = data.stdout;
             let inetStart = info.search('inet');
@@ -94,6 +95,25 @@ var checkConnection = function() {
     )
 }
 
+// build select list for interfaces
+var buildIfaceList = function () {
+    // get data from config.js wg_interface array
+    let iFaces = configs.wg_interface;
+    console.log(iFaces);
+
+    // find how many elements in the array
+    let iFaces_count = iFaces.length;
+    console.log("INterface Count = " + iFaces_count);
+
+    // loop through elements and add them to the selection window
+    for (i=0; i < iFaces_count; i++) {
+        var x = document.getElementById("chooseIface");
+        var option = document.createElement("option");
+        option.text = iFaces[i];
+        x.add(option);
+    }
+}
+
 // when the app starts, check connectivity and connection status
 Neutralino.init({
     load: function () {
@@ -114,6 +134,7 @@ var importConfig = function() {
             Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" +interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
                 function (data) {
                     console.log(data.stdout);
+                    buildIfaceList();
                 }, 
                 function () {
                     console.error("error");
@@ -142,4 +163,9 @@ var mvConfig = function(filename_in) {
             console.error('error');
         }
     );
+}
+
+var getValueChosen = function() {
+    let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
+    console.log("Interface Selected: " + interfaceValue);
 }

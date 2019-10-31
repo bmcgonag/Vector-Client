@@ -37,6 +37,13 @@ SOFTWARE. -->
   <body>
     <h3>Wireguard VPN</h3>
     <div class="row">
+      <div id="selectInterface" class="column">
+        <select class="select-css" name="chooseIface" id="chooseIface" onchange="getValueChosen()">
+        </select>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
         <div id="toggleOnOff" class="column">
           <input type="checkbox" id="toggleOnOrOff" class="toggle center" onclick="onOff()" />
         </div>
