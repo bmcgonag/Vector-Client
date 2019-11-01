@@ -130,6 +130,20 @@ var importConfig = function() {
             let lastPart = data.file.split("/").pop();
             let interface = lastPart.substr(0, lastPart.indexOf('.'));
             // console.log("Interface name: " + interface);
+
+					// compare last part to existing interfaces to avoid duplicates
+					let iFaces = configs.wg_interface;
+					let ifaceCount = iFaces.length;
+					console.log("Interface Count for dups: " + ifaceCount);
+					
+					for (i=0; i<ifaceCount; i++) {
+						if (iFaces[i] == interface) {
+							console.log("The selected interface matches an existing interface.");
+						} else {
+							console.log("No matching interface found.");
+						}
+					}
+
             console.log("sed -i 's/]/,\"" +interface + "\" &/g' ./config.js");
             Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" +interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
                 function (data) {
@@ -152,7 +166,7 @@ var importConfig = function() {
 var mvConfig = function(filename_in) {
     let filename = filename_in.replace(/\r?\n|\r/, "");
     // console.log("Filename: " + filename);
-    // console.log("------------------------------------");
+    // console.log("————————————");
     // console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/');
     
     Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/',
