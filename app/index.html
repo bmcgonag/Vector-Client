@@ -71,6 +71,30 @@ SOFTWARE. -->
         <button id="getConfig" onclick="importConfig()">Import Interface</button>
       </div>
     </div>
+
+    <!-- Section below if for pop-up message to ask if the user wants to change the interface name. -->
+    <div id="changeInterfaceModal" class="ifaceChangeOverlay">
+      <div class="modal-content">
+          <div class="row">
+            <span id="closeModal" class="close">&times;</span>
+            <div class="column">
+              <p>The interface name appears to already exist. Would you like to change it and avoid overwriting an exising interface</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="column">
+              <input type="text" class="input-css newIfaceName" id="newIfaceName" placeholder="New Interface Name"/>
+            </div>
+          </div>
+          <div class="row">
+            <div class="column">
+              <button id="change">Yes</button>
+              <button id="noChange">No</button>
+            </div>
+          </div>
+      </div>
+    </div>
+
     <script src="/neutralino.js"></script>
     <script src="/assets/config.js"></script>
     <script src="/assets/app.js"></script>

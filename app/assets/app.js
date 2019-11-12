@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 
-// toggle the vpn based on the state of the switch (checkbox).
+// ****    toggle the vpn based on the state of the switch (checkbox).
 var onOff = function() {
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
@@ -65,7 +65,7 @@ var getIpAddress = function() {
     )
 }
 
-// check connectivity
+// ****    check connectivity
 var checkConnection = function() {
     Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[0],
         function(data) {
@@ -95,17 +95,17 @@ var checkConnection = function() {
     )
 }
 
-// build select list for interfaces
+// ****    build select list for interfaces
 var buildIfaceList = function () {
-    // get data from config.js wg_interface array
+    // ****    get data from config.js wg_interface array
     let iFaces = configs.wg_interface;
-    console.log(iFaces);
+    // console.log(iFaces);
 
-    // find how many elements in the array
+    // ****    find how many elements in the array
     let iFaces_count = iFaces.length;
-    console.log("INterface Count = " + iFaces_count);
+    // console.log("INterface Count = " + iFaces_count);
 
-    // loop through elements and add them to the selection window
+    // ****    loop through elements and add them to the selection window
     for (i=0; i < iFaces_count; i++) {
         var x = document.getElementById("chooseIface");
         var option = document.createElement("option");
@@ -114,38 +114,58 @@ var buildIfaceList = function () {
     }
 }
 
-// when the app starts, check connectivity and connection status
+// ****    when the app starts, check connectivity and connection status
 Neutralino.init({
     load: function () {
         checkConnection();
     }
 });
 
-// import a wireguard configuration file
-// select the file
+// ****    import a wireguard configuration file
+// ****    select the file
 var importConfig = function() {
     Neutralino.os.dialogOpen('Open a file..', 
         function (data) {
+            // console.log("--------------------");
             // console.log(data.file);
+            // console.log("--------------------");
             let lastPart = data.file.split("/").pop();
             let interface = lastPart.substr(0, lastPart.indexOf('.'));
             // console.log("Interface name: " + interface);
 
-					// compare last part to existing interfaces to avoid duplicates
-					let iFaces = configs.wg_interface;
-					let ifaceCount = iFaces.length;
-					console.log("Interface Count for dups: " + ifaceCount);
-					
-					for (i=0; i<ifaceCount; i++) {
-						if (iFaces[i] == interface) {
-							console.log("The selected interface matches an existing interface.");
-						} else {
-							console.log("No matching interface found.");
-						}
-					}
+            if (typeof(Storage) !== "undefined") {
+                // Store
+                localStorage.setItem("filepathAndName", data.file);
+                localStorage.setItem("pathOnly", data.file.substr(0, data.file.lastIndexOf("/")));
+                localStorage.setItem("filenameOnly", lastPart);
+                localStorage.setItem("interfaceName", interface);
+            }
+            
+            // ****    compare last part to existing interfaces to avoid duplicates
+            let iFaces = configs.wg_interface;
+            let ifaceCount = iFaces.length;
+            console.log("Interface Count for dups: " + ifaceCount);
+            
+            for (i=0; i<ifaceCount; i++) {
+                if (iFaces[i] == interface) {
+                    // console.log("The selected interface matches an existing interface.");
+                    // ****    call pop-up message to ask if the user wants to change the name.
+                    document.getElementById("changeInterfaceModal").style.display = "block";
+                } else {
+                    console.log("No matching interface found.");
+                    addInterfaceToList(interface, data.file);
+                }
+            }
+        },
+        function () {
+            console.error('error');
+        }
+    );
+}
 
-            console.log("sed -i 's/]/,\"" +interface + "\" &/g' ./config.js");
-            Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" +interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
+var addInterfaceToList = function(interface, dataFile) {
+    console.log("sed -i 's/]/,\"" + interface + "\" &/g' ./config.js");
+            Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" + interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
                 function (data) {
                     console.log(data.stdout);
                     buildIfaceList();
@@ -154,32 +174,99 @@ var importConfig = function() {
                     console.error("error");
                 }
             );
-            mvConfig(data.file);
-        },
-        function () {
-            console.error('error');
-        }
-    );
+            mvConfig(dataFile);
 }
 
-// read the file
+// ****    read the file
 var mvConfig = function(filename_in) {
+    // ****    move this to the calling function and set it as a session variable
     let filename = filename_in.replace(/\r?\n|\r/, "");
-    // console.log("Filename: " + filename);
-    // console.log("————————————");
-    // console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/');
-    
-    Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/',
-        function (data) {
-            // console.log(data);
-        },
-        function () {
-            console.error('error');
-        }
-    );
+
+    let didNameChange = localStorage.getItem("changedInterface");
+    let newName = localStorage.getItem("newFileName");
+
+    if (didNameChange == "yes") {
+        console.log("Changing the interface name on copy:");
+        console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etch/wireguard/' + newName + '.conf');
+
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etch/wireguard/' + newName + '.conf', 
+            function(data) {
+                // console.log(data);
+            },
+            function() {
+                console.error('error');
+            }
+        );
+    } else {
+        // console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/');
+        
+        // ****    get the re-written filename to use if necessary
+
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/',
+            function(data) {
+                // console.log(data);
+            },
+            function() {
+                console.error('error');
+            }
+        );
+    }
 }
 
+// ****    get the value chosen by the user in the drop down
 var getValueChosen = function() {
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     console.log("Interface Selected: " + interfaceValue);
+}
+
+// ****    If the user enters a new interface name during import - get it
+var changeInterfaceName = function(newName) {
+    console.log("Interface name would now be: " + newName);
+
+    // get the values from the session storage to use
+    let filePathAndName = localStorage.getItem("filepathAndName");
+    let pathOnly = localStorage.getItem("pathOnly");
+    let filenameOnly = localStorage.getItem("filenameOnly");
+    let interfaceName = localStorage.getItem("interfaceName");
+
+    // create the new file path to copy to
+    localStorage.setItem("newFileName", newName);
+    localStorage.setItem("changedInterface", "yes");
+
+    // console.log("pathOnly = " + pathOnly);
+    // console.log("filenameOnly = " + filenameOnly);
+
+    // now create the new Interface with it's new name
+    addInterfaceToList(newName, filePathAndName);
+}
+
+// ****    Handle different option button clicks on modal
+var yesBtn = document.getElementById("change");
+var noBtn = document.getElementById("noChange");
+var spanClick = document.getElementById("closeModal");
+
+yesBtn.onclick = function() {
+    let newName = document.getElementById("newIfaceName").value;
+    if (newName == "" || newName == null) {
+        // turn the background of the field red and text of the field white
+        let myIfaceName = document.getElementById("newIfaceName");
+        myIfaceName.style.border = "3px solid red";
+    } else {
+        // call the change interface name function and pass it the newName value
+        let myModal = document.getElementById("changeInterfaceModal");
+        myModal.style.display = "none";
+        changeInterfaceName(newName);
+    }
+}
+
+noBtn.onclick = function() {
+    // simply copy the interface to the location.
+    let myModal = document.getElementById("changeInterfaceModal");
+    myModal.style.display = "none";
+    mvConfig(filename);
+}
+
+spanClick.onclick = function() {
+    let myModal = document.getElementById("changeInterfaceModal");
+    myModal.style.display = "none";
 }
