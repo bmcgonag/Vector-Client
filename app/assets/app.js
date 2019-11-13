@@ -23,6 +23,8 @@
 
 // ****    toggle the vpn based on the state of the switch (checkbox).
 var onOff = function() {
+    console.log("");
+    console.log("    ----    Inside Toggle On / Off function");
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     if (isChecked == true) {
@@ -51,7 +53,8 @@ var onOff = function() {
 }
 
 var getIpAddress = function() {
-    console.log("About to check thte public IP.");
+    console.log("");
+    console.log("    ----    Inside Check IP Address function");
     Neutralino.os.runCommand('dig +short myip.opendns.com @resolver1.opendns.com',
         function(data) {
             // console.log("Got data back: " + data.stdout);
@@ -67,6 +70,8 @@ var getIpAddress = function() {
 
 // ****    check connectivity
 var checkConnection = function() {
+    console.log("");
+    console.log("    ----    Inside Check Connection function");
     Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[0],
         function(data) {
             let info = data.stdout;
@@ -97,6 +102,8 @@ var checkConnection = function() {
 
 // ****    build select list for interfaces
 var buildIfaceList = function () {
+    console.log("");
+    console.log("    ----    Inside Build Interface List function");
     // ****    get data from config.js wg_interface array
     let iFaces = configs.wg_interface;
     // console.log(iFaces);
@@ -124,6 +131,8 @@ Neutralino.init({
 // ****    import a wireguard configuration file
 // ****    select the file
 var importConfig = function() {
+    console.log("");
+    console.log("    ----    Inside Import Configuration function");
     Neutralino.os.dialogOpen('Open a file..', 
         function (data) {
             // console.log("--------------------");
@@ -164,6 +173,8 @@ var importConfig = function() {
 }
 
 var addInterfaceToList = function(interface, dataFile) {
+    console.log("");
+    console.log("    ----    Inside Add Interface To List Function.");
     console.log("sed -i 's/]/,\"" + interface + "\" &/g' ./config.js");
             Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" + interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
                 function (data) {
@@ -179,6 +190,8 @@ var addInterfaceToList = function(interface, dataFile) {
 
 // ****    read the file
 var mvConfig = function(filename_in) {
+    console.log("");
+    console.log("    ----    Inside Move file function");
     // ****    move this to the calling function and set it as a session variable
     let filename = filename_in.replace(/\r?\n|\r/, "");
 
@@ -191,12 +204,13 @@ var mvConfig = function(filename_in) {
 
         Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etch/wireguard/' + newName + '.conf', 
             function(data) {
-                // console.log(data);
+                console.log(data.stdout);
             },
             function() {
                 console.error('error');
             }
         );
+        localStorage.setItem("changedInterface", "no");
     } else {
         // console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/');
         
@@ -215,13 +229,18 @@ var mvConfig = function(filename_in) {
 
 // ****    get the value chosen by the user in the drop down
 var getValueChosen = function() {
+    console.log("");
+    console.log("    ----    Inside Get New Interface Name Value function");
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     console.log("Interface Selected: " + interfaceValue);
 }
 
 // ****    If the user enters a new interface name during import - get it
 var changeInterfaceName = function(newName) {
-    console.log("Interface name would now be: " + newName);
+    console.log("");
+    console.log("    ----    Inside Change Interface Name function");
+    console.log("")
+    console.log(" - Interface name would now be: " + newName);
 
     // get the values from the session storage to use
     let filePathAndName = localStorage.getItem("filepathAndName");
@@ -246,6 +265,8 @@ var noBtn = document.getElementById("noChange");
 var spanClick = document.getElementById("closeModal");
 
 yesBtn.onclick = function() {
+    console.log("");
+    console.log("    ----    Inside Clicked Yes function");
     let newName = document.getElementById("newIfaceName").value;
     if (newName == "" || newName == null) {
         // turn the background of the field red and text of the field white
@@ -260,6 +281,8 @@ yesBtn.onclick = function() {
 }
 
 noBtn.onclick = function() {
+    console.log("");
+    console.log("    ----    Inside Clicked No function");
     // simply copy the interface to the location.
     let myModal = document.getElementById("changeInterfaceModal");
     myModal.style.display = "none";
@@ -267,6 +290,8 @@ noBtn.onclick = function() {
 }
 
 spanClick.onclick = function() {
+    console.log("");
+    console.log("    ----    Inside Close Modal without Selection fo Yes / No function");
     let myModal = document.getElementById("changeInterfaceModal");
     myModal.style.display = "none";
 }
