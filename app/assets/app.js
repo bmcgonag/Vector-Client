@@ -106,11 +106,12 @@ var buildIfaceList = function () {
     console.log("    ----    Inside Build Interface List function");
     // ****    get data from config.js wg_interface array
     let iFaces = configs.wg_interface;
-    // console.log(iFaces);
+    console.log(" - Interfaces are:");
+    console.log(iFaces);
 
     // ****    find how many elements in the array
     let iFaces_count = iFaces.length;
-    // console.log("INterface Count = " + iFaces_count);
+    console.log("Interface Count = " + iFaces_count);
 
     // ****    loop through elements and add them to the selection window
     for (i=0; i < iFaces_count; i++) {
@@ -200,9 +201,9 @@ var mvConfig = function(filename_in) {
 
     if (didNameChange == "yes") {
         console.log("Changing the interface name on copy:");
-        console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etch/wireguard/' + newName + '.conf');
+        console.log('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/' + newName + '.conf');
 
-        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etch/wireguard/' + newName + '.conf', 
+        Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S cp ' + filename + ' /etc/wireguard/' + newName + '.conf', 
             function(data) {
                 console.log(data.stdout);
             },
