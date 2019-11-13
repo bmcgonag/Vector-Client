@@ -105,6 +105,14 @@ var buildIfaceList = function () {
     console.log("");
     console.log("    ----    Inside Build Interface List function");
     // ****    get data from config.js wg_interface array
+
+    // first we'll remove the options from the drop-down then rebuild it
+    let iFaceList = document.getElementById("chooseIface");
+
+    while (iFaceList.options.length != 0) {
+        iFaceList.options.remove(iFaceList.options.length - 1);
+    }
+
     let iFaces = configs.wg_interface;
     console.log(" - Interfaces are:");
     console.log(iFaces);
