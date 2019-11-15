@@ -293,6 +293,7 @@ noBtn.onclick = function() {
     console.log("");
     console.log("    ----    Inside Clicked No function");
     // simply copy the interface to the location.
+    let filename = localStorage.getItem("filenameOnly");
     let myModal = document.getElementById("changeInterfaceModal");
     myModal.style.display = "none";
     mvConfig(filename);
