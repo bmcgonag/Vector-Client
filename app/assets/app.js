@@ -32,7 +32,7 @@ var onOff = function() {
             function (data) {
                 // console.log("Data from bringing up Wireguard Interface: ");
                 // console.dir(data);
-                checkConnection();
+                checkConnection("toggle");
             },
             function () {
                 console.error('error');
@@ -43,7 +43,7 @@ var onOff = function() {
             function(data) {
                 // console.log("Data from taking down Wireguard Interface: ");
                 // console.dir(data);
-                checkConnection();
+                checkConnection("toggle");
             },
             function() {
                 console.error('error');
@@ -52,7 +52,7 @@ var onOff = function() {
     }
 }
 
-var getIpAddress = function() {
+var getIpAddress = function(reason) {
     console.log("");
     console.log("    ----    Inside Check IP Address function");
     Neutralino.os.runCommand('dig +short myip.opendns.com @resolver1.opendns.com',
@@ -60,7 +60,9 @@ var getIpAddress = function() {
             // console.log("Got data back: " + data.stdout);
             let ipAddress = data.stdout;
             document.getElementById('output').innerText = ipAddress;
-            buildIfaceList();
+            if (reason == "start") {
+                buildIfaceList();
+            }
         },
         function() {
             console.error("Error");
@@ -69,10 +71,14 @@ var getIpAddress = function() {
 }
 
 // ****    check connectivity
-var checkConnection = function() {
+var checkConnection = function(reason) {
     console.log("");
     console.log("    ----    Inside Check Connection function");
-    Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[0],
+    let selIndex = localStorage.getItem("selIndex");
+    if (typeof selIndex == 'undefined' || selIndex == null || selIndex == "") {
+        selIndex = 0;
+    }
+    Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[selIndex],
         function(data) {
             let info = data.stdout;
             let inetStart = info.search('inet');
@@ -91,7 +97,7 @@ var checkConnection = function() {
 
                 let exx = document.getElementById("exx");
                 exx.style.display = "block";
-                getIpAddress();
+                getIpAddress(reason);
             }
         },
         function() {
@@ -133,7 +139,7 @@ var buildIfaceList = function () {
 // ****    when the app starts, check connectivity and connection status
 Neutralino.init({
     load: function () {
-        checkConnection();
+        checkConnection("start");
     }
 });
 
@@ -242,6 +248,9 @@ var getValueChosen = function() {
     console.log("    ----    Inside Get New Interface Name Value function");
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     console.log("Interface Selected: " + interfaceValue);
+    let sel = document.getElementById('chooseIface');
+    let interfaceIndex = sel.selectedIndex;
+    localStorage.setItem("selIndex", interfaceIndex);
 }
 
 // ****    If the user enters a new interface name during import - get it

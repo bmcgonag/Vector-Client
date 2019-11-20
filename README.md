@@ -48,5 +48,9 @@ I'm making a script that will help pull the zipped up version of this repo, and 
 - wgvpn.sh
 -- a shell script that can be used in a launcher to create a desktop icon to launch the app.
 
-# NeutralinoJS Prjoect
+## Credits
+### NeutralinoJS Prjoect
 https://neutralino.js.org/
+
+## Contribute
+I am always happy for anyone to jump in and start helping me with any project.  
