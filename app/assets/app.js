@@ -74,10 +74,12 @@ var getIpAddress = function(reason) {
 var checkConnection = function(reason) {
     console.log("");
     console.log("    ----    Inside Check Connection function");
+    buildIfaceList();
     let selIndex = localStorage.getItem("selIndex");
     if (typeof selIndex == 'undefined' || selIndex == null || selIndex == "") {
         selIndex = 0;
     }
+
     Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[selIndex],
         function(data) {
             let info = data.stdout;
