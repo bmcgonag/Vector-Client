@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd /opt/WiregUIrd
+cd /opt/Vector-Client
 
 ./WireguardUI
