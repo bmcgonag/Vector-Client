@@ -55,11 +55,51 @@ var onOff = function() {
 var getIpAddress = function(reason) {
     console.log("");
     console.log("    ----    Inside Check IP Address function");
+    let selIndex = localStorage.getItem("selIndex");
+    if (typeof selIndex == 'undefined' || selIndex == null || selIndex == "") {
+        selIndex = 0;
+    }
+    let downspeed = 0;
+    let downspeed1 = 0;
+    let downspeedTot = 0;
+    let upspeed = 0;
+    let upspeed1 = 0;
+    let upspeedTot = 0;
+
     Neutralino.os.runCommand('dig +short myip.opendns.com @resolver1.opendns.com',
         function(data) {
             // console.log("Got data back: " + data.stdout);
             let ipAddress = data.stdout;
             document.getElementById('output').innerText = ipAddress;
+
+            setInterval(function() {
+                Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
+                    function(speedInfo) {
+                        console.log("---------------------");
+                        console.log(speedInfo);
+                        console.log("---------------------");
+                        downspeed = speedInfo.stdout;
+                        console.log("Downspeed read: " + downspeed);
+                        downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
+                        console.log('Downspeed total: ' + downspeedTot);
+                        document.getElementById('speed').innerText = downspeedTot;
+                        downspeed1 = downspeed;
+                    }
+                )
+
+                Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
+                    function(upInfo) {
+                        console.log("-------------------");
+                        console.log("upInfo");
+                        console.log("-------------------");
+                        upspeed = upInfo.stdout;
+                        upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
+                        document.getElementById('upspeed').innerText = upspeedTot;
+                        upspeed1 = upspeed;
+                    }
+                )
+            }, 2000);
+
             if (reason == "start") {
                 buildIfaceList();
             }
@@ -84,21 +124,14 @@ var checkConnection = function(reason) {
         function(data) {
             let info = data.stdout;
             let inetStart = info.search('inet');
+            let downspeed = 0;
+            let downspeed1 = 0;
 
             if (inetStart >= 0) {
-                let checkMark = document.getElementById("checkMark");
-                checkMark.style.display = "block";
-                document.getElementById("toggleOnOrOff").checked = true;
+                // downspeed = navigator.connection.downlink;
 
-                let exx = document.getElementById("exx");
-                exx.style.display = "none";
                 getIpAddress();
             } else {
-                let checkMark = document.getElementById("checkMark");
-                checkMark.style.display = "none";
-
-                let exx = document.getElementById("exx");
-                exx.style.display = "block";
                 getIpAddress(reason);
             }
         },

@@ -1,9 +1,9 @@
 {
     "appname" : "WireGuard",
     "appport" : "0",
-    "mode" : "window",
+    "mode" : "browser",
     "window" : {
-        "width" : "200",
-        "height" : "420"
+        "width" : "300",
+        "height" : "540"
     }
 }

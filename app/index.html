@@ -24,76 +24,88 @@ SOFTWARE. -->
 
 <!DOCTYPE html>
 <html>
+  <title>Vector Client</title>
   <head>
     <meta charset="UTF-8">
     <title>NeutralinoJs</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <link rel="stylesheet" href="/assets/app.css">
     
-    <!-- <link rel="stylesheet" href="/assets/milligram.min.css"> -->
+    <link rel="stylesheet" href="/assets/milligram.min.css">
     <link rel="stylesheet" href="/assets/my-css.css">
   </head>
 
   <body>
-    <h3>Wireguard VPN</h3>
-    <div class="row">
-      <div id="selectInterface" class="column">
-        <select class="select-css" name="chooseIface" id="chooseIface" onchange="getValueChosen()">
-        </select>
-      </div>
+
+    <div class="sidenav">
+      <a href="#" class="fa fa-home" aria-hidden="true"></a>
+      <a href="#" class="fa fa-plus" aria-hidden="true"></a>
+      <a href="#" class="fa fa-cog" aria-hidden="true"></a>
     </div>
-    <hr>
-    <div class="row">
-        <div id="toggleOnOff" class="column">
-          <input type="checkbox" id="toggleOnOrOff" class="toggle center" onclick="onOff()" />
+
+    
+
+    <div class="main">
+      <div class="row">
+        <div class="column">Connect to a Network</div>
+      </div>
+      <div class="row">
+        <div id="selectInterface" class="column">
+          <select class="select-css" name="chooseIface" id="chooseIface" onchange="getValueChosen()">
+          </select>
         </div>
-    </div>
-    <div class="row">
-      <div class="column checkMark indicatorIcon" id="checkMark">
-        <i class="far fa-check fa-7x green-text"></i>
       </div>
-      <div class="column exx indicatorIcon" id="exx">
-        <i class="far fa-times fa-7x red-text"></i>
+      <br />
+      <div class="row">
+          <div class="connect column" id="connect">
+            <button class="button connectToNetwork" id="connectToNetwork">Connect</button>
+          </div>
       </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="column">
-        Public IP: 
+
+  <!-- Connection Info section - click the lightning bolt -->
+    <div id="connectionInfo" class="connectionInfo">
+      <div class="row">
+        <div class="column dark-mode">
+          Public IP: 
+        </div>
+        <div class="column dark-mode">
+          <span id="output"></span>
+        </div>
       </div>
-      <div class="column">
-        <span id="output"></span>
-      </div>
-    </div>
-    <br />
-    <div class="row">
-      <div class="column">
-        <button id="getConfig" onclick="importConfig()">Import Interface</button>
+      <div class="row">
+        <div class="column dark-mode">
+          <span class="fa fa-arrow-down" aria-hidden="true" id="speed"></span>
+        </div>
+        <div class="column dark-mode">
+          <span class="fa fa-arrow-up" aria-hidden="true" id="upspeed"></span>
+        </div>
       </div>
     </div>
 
-    <!-- Section below if for pop-up message to ask if the user wants to change the interface name. -->
-    <div id="changeInterfaceModal" class="ifaceChangeOverlay">
-      <div class="modal-content">
-          <div class="row">
-            <span id="closeModal" class="close">&times;</span>
-            <div class="column">
-              <p>The interface name appears to already exist. Would you like to change it and avoid overwriting an exising interface</p>
+  <!-- Section below if for pop-up message to ask if the user wants to change the interface name. -->
+      <div id="changeInterfaceModal" class="ifaceChangeOverlay">
+        <div class="modal-content">
+            <div class="row">
+              <span id="closeModal" class="close">&times;</span>
+              <div class="column">
+                <p>The interface name appears to already exist. Would you like to change it and avoid overwriting an exising interface</p>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="column">
-              <input type="text" class="input-css newIfaceName" id="newIfaceName" placeholder="New Interface Name"/>
+            <div class="row">
+              <div class="column">
+                <input type="text" class="input-css newIfaceName" id="newIfaceName" placeholder="New Interface Name"/>
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="column">
-              <button id="change">Yes</button>
-              <button id="noChange">No</button>
+            <div class="row">
+              <div class="column">
+                <button id="change">Yes</button>
+                <button id="noChange">No</button>
+              </div>
             </div>
-          </div>
+        </div>
       </div>
     </div>
+    
 
     <script src="/neutralino.js"></script>
     <script src="/assets/config.js"></script>
