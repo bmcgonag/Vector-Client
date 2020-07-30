@@ -1,9 +1,9 @@
 {
-    "appname" : "WireGuard",
+    "appname" : "Vector",
     "appport" : "0",
-    "mode" : "browser",
+    "mode" : "window",
     "window" : {
-        "width" : "300",
+        "width" : "420",
         "height" : "540"
     }
 }

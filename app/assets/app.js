@@ -349,3 +349,19 @@ spanClick.onclick = function() {
     let myModal = document.getElementById("changeInterfaceModal");
     myModal.style.display = "none";
 }
+
+addInt.onclick = function() {
+    console.log("Clicked Add Interface Page");
+    let connPage = document.getElementById("connectPage");
+    let addInterface = document.getElementById("addInterfacePage");
+    addInterface.style.display = "block";
+    connPage.style.display = "none";
+}
+
+connectPg.onclick = function() {
+    console.log("Clicked Connect Page");
+    let connPage = document.getElementById("connectPage");
+    let addInterface = document.getElementById("addInterfacePage");
+    connPage.style.display = "block";
+    addInterface.style.display = "none";
+}
