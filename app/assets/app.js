@@ -26,7 +26,8 @@ var onOff = function() {
     console.log("");
     console.log("    ----    Inside Toggle On / Off function");
     let isChecked = document.getElementById("toggleOnOrOff").checked;
-    let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
+    let interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
+    // alert("Interface Value: " + interfaceValue);
     if (isChecked == true) {
         Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue, 
             function (data) {

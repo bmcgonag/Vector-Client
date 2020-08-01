@@ -7,17 +7,31 @@ Anyway, I just want linux to be a first class citizen along with the rest of the
 
 I 100% appreciate what Wireguard is doing for VPNs and encryption, so please don't misunderstand.  I just wanted to do something to help out. 
 
+## Help Wanted
+
+I have the code for the application itself under contruction for my new version, and things are going well.  Where I would really like some help is on a better installer script that will help users with any distro install the software and use it without any snags.  
+
+So, if anyone is a bash scripting guru, and would like to help out, it would be much appreciated.
+
+## Changes under way
+Currently I'm updating the UI and User Experience a bit with the app.  I liked my first run, but it wasn't exactly simple to import an interface, and I really didn't have any good way to add an existing interface to the app.
+
+- Improving the Connection / Disconnect UX / UI
+- Adding the abilityt o add existing interfaces for use with the app by interface name.
+- Adding bandwidth usage readouts for download and upload speeds on the connected interface.
+- Separating the UI into navigable sections.
+
 ## Installation
 
 Use this command 
 
-`curl https://github.com/bmcgonag/WireguardUIClient/releases/download/0.1.0/install_wireguard_gui_client.sh | sh`
+`curl https://github.com/bmcgonag/WireguardUIClient/releases/download/0.6.0/install_wireguard_gui_client.sh | sh`
 
 Or, 
 
 Download the script from 
 
-https://github.com/bmcgonag/WireguardUIClient/releases/download/0.1.0/install_wireguard_gui_client.sh
+https://github.com/bmcgonag/WireguardUIClient/releases/download/0.6.0/install_wireguard_gui_client.sh
 
 and use the command
 
