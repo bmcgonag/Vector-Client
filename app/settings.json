@@ -1,9 +1,16 @@
 {
-    "appname" : "Vector",
-    "appport" : "0",
-    "mode" : "window",
-    "window" : {
+    "appname": "Vector",
+    "appport": "0",
+    "mode": "browser",
+    "url": "/",
+    "window": {
+        "title": "Vector",
         "width" : "420",
-        "height" : "540"
+        "height" : "540",
+        "fullscreen": false,
+        "alwaysontop": false,
+        "iconfile": "Vector_Logo.png",
+        "enableinspector": true,
+        "borderlesswindow": false
     }
 }

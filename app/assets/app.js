@@ -27,6 +27,15 @@ var onOff = function() {
     console.log("    ----    Inside Toggle On / Off function");
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
+
+    let downspeed = 0;
+    let downspeed1 = 0;
+    let downspeedTot = 0;
+    let upspeed = 0;
+    let upspeed1 = 0;
+    let upspeedTot = 0;
+    let selIndex = localStorage.getItem("selIndex");
+
     // alert("Interface Value: " + interfaceValue);
     if (isChecked == true) {
         Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue, 
@@ -34,6 +43,37 @@ var onOff = function() {
                 // console.log("Data from bringing up Wireguard Interface: ");
                 // console.dir(data);
                 checkConnection("toggle");
+
+                var checkSpeed = window.setInterval(function() {
+                    try {
+                        Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
+                            function(speedInfo) {
+                                console.log("---------------------");
+                                console.log(speedInfo.stdout);
+                                downspeed = speedInfo.stdout;
+                                console.log("Downspeed read: " + downspeed);
+                                downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
+                                console.log('Downspeed total: ' + downspeedTot);
+                                document.getElementById('speed').innerText = downspeedTot;
+                                downspeed1 = downspeed;
+                            }
+                        )
+    
+                        Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
+                            function(upInfo) {
+                                console.log("-------------------");
+                                console.log(upInfo.stdout);
+                                upspeed = upInfo.stdout;
+                                upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
+                                document.getElementById('upspeed').innerText = upspeedTot;
+                                upspeed1 = upspeed;
+                            }
+                        )
+                    } catch (error) {
+                        console.log("Error on reading download / upload speed: " + error);
+                    }
+                    
+                }, 2000);
             },
             function () {
                 console.error('error');
@@ -42,8 +82,15 @@ var onOff = function() {
     } else {
         Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick down ' + interfaceValue,
             function(data) {
-                // console.log("Data from taking down Wireguard Interface: ");
+                console.log("Taking down Wireguard Interface: ");
                 // console.dir(data);
+                
+                try {
+                    console.log("Trying to Clear Interval");
+                    window.clearInterval(checkSpeed);
+                } catch (err) {
+                    console.log("Error clearing interval: " + err);
+                }
                 checkConnection("toggle");
             },
             function() {
@@ -60,46 +107,12 @@ var getIpAddress = function(reason) {
     if (typeof selIndex == 'undefined' || selIndex == null || selIndex == "") {
         selIndex = 0;
     }
-    let downspeed = 0;
-    let downspeed1 = 0;
-    let downspeedTot = 0;
-    let upspeed = 0;
-    let upspeed1 = 0;
-    let upspeedTot = 0;
 
     Neutralino.os.runCommand('dig +short myip.opendns.com @resolver1.opendns.com',
         function(data) {
             // console.log("Got data back: " + data.stdout);
             let ipAddress = data.stdout;
             document.getElementById('output').innerText = ipAddress;
-
-            setInterval(function() {
-                Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
-                    function(speedInfo) {
-                        console.log("---------------------");
-                        console.log(speedInfo);
-                        console.log("---------------------");
-                        downspeed = speedInfo.stdout;
-                        console.log("Downspeed read: " + downspeed);
-                        downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
-                        console.log('Downspeed total: ' + downspeedTot);
-                        document.getElementById('speed').innerText = downspeedTot;
-                        downspeed1 = downspeed;
-                    }
-                )
-
-                Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
-                    function(upInfo) {
-                        console.log("-------------------");
-                        console.log("upInfo");
-                        console.log("-------------------");
-                        upspeed = upInfo.stdout;
-                        upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
-                        document.getElementById('upspeed').innerText = upspeedTot;
-                        upspeed1 = upspeed;
-                    }
-                )
-            }, 2000);
 
             if (reason == "start") {
                 buildIfaceList();
@@ -125,12 +138,8 @@ var checkConnection = function(reason) {
         function(data) {
             let info = data.stdout;
             let inetStart = info.search('inet');
-            let downspeed = 0;
-            let downspeed1 = 0;
 
             if (inetStart >= 0) {
-                // downspeed = navigator.connection.downlink;
-
                 getIpAddress();
             } else {
                 getIpAddress(reason);
