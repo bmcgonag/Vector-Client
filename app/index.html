@@ -33,6 +33,8 @@ SOFTWARE. -->
     
     <link rel="stylesheet" href="/assets/milligram.min.css">
     <link rel="stylesheet" href="/assets/my-css.css">
+
+    <script src="/assets/config.js"></script>
   </head>
 
   <body>
@@ -44,17 +46,17 @@ SOFTWARE. -->
     </div>
 
     <div class="main">
-      <h3>Connections</h3>
       <div class="connectPage" id="connectPage">
+        <h3>Connections</h3>
         <div class="row">
           <div class="column">Connect to a Network</div>
         </div>
         <div class="row">
-          <div id="selectInterface" class="column">
+          <div id="selectInterface" class="column column-75">
             <select class="select-css" name="chooseIface" id="chooseIface" onchange="getValueChosen()">
             </select>
           </div>
-          <div class="column column-25 column-offset-25">
+          <div class="column column-25">
             <label class="switch">
               <input type="checkbox" id="toggleOnOrOff" onclick="onOff()">
               <span class="slider round"></span>
@@ -88,8 +90,19 @@ SOFTWARE. -->
   <!--  Add new interface -->
   <div class="addInterfacePage" id="addInterfacePage">
     <h3>Interfaces</h3>
-    <label for="exInterfaceName">Enter an existing interface name</label>
-    <input type="text" class="exInterfaceName dark-mode" id="exInterfaceName" placeholder="Interface Name..." />
+    <div class="row">
+      <div class="column">
+        <label for="exInterfaceName">Enter existing interface</label>
+        <input type="text" class="exInterfaceName dark-mode" id="exInterfaceName" placeholder="Interface Name..." />
+      </div>
+    </div>
+    <div class="row">
+      <div class="column column-50 column-offset-50">
+        <a href="#" class="button" id="addIntBtn" onclick="addNewInt()">Add</a>
+      </div>
+    </div>
+
+    <table id="iFaceTbl"></table>
   </div>
 
   <!-- Section below if for pop-up message to ask if the user wants to change the interface name. -->
@@ -118,7 +131,6 @@ SOFTWARE. -->
     
 
     <script src="/neutralino.js"></script>
-    <script src="/assets/config.js"></script>
     <script src="/assets/app.js"></script>
   </body>
 </html>

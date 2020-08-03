@@ -28,6 +28,7 @@ var onOff = function() {
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
 
+    var checkSpeed = null;
     let downspeed = 0;
     let downspeed1 = 0;
     let downspeedTot = 0;
@@ -44,36 +45,36 @@ var onOff = function() {
                 // console.dir(data);
                 checkConnection("toggle");
 
-                var checkSpeed = window.setInterval(function() {
-                    try {
-                        Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
-                            function(speedInfo) {
-                                console.log("---------------------");
-                                console.log(speedInfo.stdout);
-                                downspeed = speedInfo.stdout;
-                                console.log("Downspeed read: " + downspeed);
-                                downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
-                                console.log('Downspeed total: ' + downspeedTot);
-                                document.getElementById('speed').innerText = downspeedTot;
-                                downspeed1 = downspeed;
-                            }
-                        )
+                // checkSpeed = window.setInterval(function() {
+                //     try {
+                //         Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
+                //             function(speedInfo) {
+                //                 console.log("---------------------");
+                //                 console.log(speedInfo.stdout);
+                //                 downspeed = speedInfo.stdout;
+                //                 console.log("Downspeed read: " + downspeed);
+                //                 downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
+                //                 console.log('Downspeed total: ' + downspeedTot);
+                //                 document.getElementById('speed').innerText = downspeedTot;
+                //                 downspeed1 = downspeed;
+                //             }
+                //         )
     
-                        Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
-                            function(upInfo) {
-                                console.log("-------------------");
-                                console.log(upInfo.stdout);
-                                upspeed = upInfo.stdout;
-                                upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
-                                document.getElementById('upspeed').innerText = upspeedTot;
-                                upspeed1 = upspeed;
-                            }
-                        )
-                    } catch (error) {
-                        console.log("Error on reading download / upload speed: " + error);
-                    }
+                //         Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
+                //             function(upInfo) {
+                //                 console.log("-------------------");
+                //                 console.log(upInfo.stdout);
+                //                 upspeed = upInfo.stdout;
+                //                 upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
+                //                 document.getElementById('upspeed').innerText = upspeedTot;
+                //                 upspeed1 = upspeed;
+                //             }
+                //         )
+                //     } catch (error) {
+                //         console.log("Error on reading download / upload speed: " + error);
+                //     }
                     
-                }, 2000);
+                // }, 2000);
             },
             function () {
                 console.error('error');
@@ -235,17 +236,22 @@ var importConfig = function() {
 var addInterfaceToList = function(interface, dataFile) {
     console.log("");
     console.log("    ----    Inside Add Interface To List Function.");
-    console.log("sed -i 's/]/,\"" + interface + "\" &/g' ./config.js");
-            Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" + interface + "\"&/g' /opt/WiregUIrd/app/assets/config.js",
-                function (data) {
-                    console.log(data.stdout);
-                    buildIfaceList();
-                }, 
-                function () {
-                    console.error("error");
-                }
-            );
-            mvConfig(dataFile);
+            //Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" + interface + "\"&/g' /opt/Vector-Clinet/app/assets/config.js",
+            if (configs && configs.wg_interface) {
+                console.log(" - - adding interface name: " + interface);
+                configs.wg_interface.push(interface);
+            }
+            //     function (data) {
+            //         console.log(data.stdout);
+            //         buildIfaceList();
+            //     }, 
+            //     function () {
+            //         console.error("error");
+            //     }
+            // );
+            if (dataFile != "manual") {
+                mvConfig(dataFile);
+            }
 }
 
 // ****    read the file
@@ -366,6 +372,26 @@ addInt.onclick = function() {
     let addInterface = document.getElementById("addInterfacePage");
     addInterface.style.display = "block";
     connPage.style.display = "none";
+    let Currenthtml = "";
+
+    // remove interface table, and rebuild to make sure we have the correct (most up to date) list of interfaces
+    var iFaceTbl = document.getElementById("iFaceTbl");
+
+    // now build our table body
+    let iFaces = configs.wg_interface;
+    console.dir(iFaces);
+    let iFaces_count = iFaces.length;
+    console.log("length: " + iFaces_count);
+    for (i=0; i < iFaces_count; i++) {
+        console.log("trying to add interface for: " + iFaces[i]);
+        let html_to_insert = '<tr><td>' + iFaces[i] + '</td><td><span class="fa fa-trash"></span></td></tr>';
+        Currenthtml = Currenthtml + html_to_insert;
+        console.log(" - - " + [i] + " - " + Currenthtml);
+        if (i == iFaces_count-1) {
+            console.log("it's equal!");
+            iFaceTbl.innerHTML = Currenthtml;
+        }
+    }
 }
 
 connectPg.onclick = function() {
@@ -374,4 +400,11 @@ connectPg.onclick = function() {
     let addInterface = document.getElementById("addInterfacePage");
     connPage.style.display = "block";
     addInterface.style.display = "none";
+}
+
+var addNewInt = function() {
+    let newInt = document.getElementById("exInterfaceName").value;
+    console.log("about to add interface to list: " + newInt);
+
+    addInterfaceToList(newInt, "manual");
 }
