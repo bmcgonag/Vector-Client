@@ -1,4 +1,4 @@
 var configs = {
-    sudo_user_pass: "you-password-here",
-    wg_interface: ["wg-admin"]
+    sudo_user_pass: "your-password-here",
+    wg_interface: [""]
 }

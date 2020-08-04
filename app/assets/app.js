@@ -154,6 +154,7 @@ var checkConnection = function(reason) {
 
 // ****    build select list for interfaces
 var buildIfaceList = function () {
+    let intArray = [];
     console.log("");
     console.log("    ----    Inside Build Interface List function");
     // ****    get data from config.js wg_interface array
@@ -165,9 +166,17 @@ var buildIfaceList = function () {
         iFaceList.options.remove(iFaceList.options.length - 1);
     }
 
-    let iFaces = configs.wg_interface;
+    Neutralino.filesystem.readFile("interfaceInfo.conf"),
+        function(data) {
+            intArray = data.content.split(',');
+            localStorage.setItem("interfaceArray", intArray);
+        },
+        function() {
+            console.log("Error: " + error);
+        }
     console.log(" - Interfaces are:");
-    console.log(iFaces);
+    console.log(intArray);
+    let iFaces = intArray;
 
     // ****    find how many elements in the array
     let iFaces_count = iFaces.length;
@@ -234,24 +243,37 @@ var importConfig = function() {
 }
 
 var addInterfaceToList = function(interface, dataFile) {
+    let newIntFile = "";
     console.log("");
     console.log("    ----    Inside Add Interface To List Function.");
-            //Neutralino.os.runCommand("echo " + configs.sudo_user_pass + " | sudo -S sed -i 's/]/,\"" + interface + "\"&/g' /opt/Vector-Clinet/app/assets/config.js",
-            if (configs && configs.wg_interface) {
-                console.log(" - - adding interface name: " + interface);
-                configs.wg_interface.push(interface);
+    try {
+        // get the current interface array
+        let intArray = localStorage.getItem("interfaceArray");
+        console.log("-----------------------------------");
+        console.log("intArray = " + intArray);
+
+        // add the new interface to the end of the array
+        intArray.push(interface);
+
+        // turn our array into a comma separated string
+        for (i = 0; i < intArray.length; i++) {
+            newIntFile = newIntFile + intArray[i];
+        }
+
+        // write the new values out to our config file.
+        Neutralino.filesystem.writeFile('interfaceInfo.conf', newIntFile),
+            function (data) {
+                console.log(data);
+            },
+            function () {
+                console.error('error');
             }
-            //     function (data) {
-            //         console.log(data.stdout);
-            //         buildIfaceList();
-            //     }, 
-            //     function () {
-            //         console.error("error");
-            //     }
-            // );
-            if (dataFile != "manual") {
-                mvConfig(dataFile);
-            }
+    } catch (err) {
+        console.log("Error: " + err.name + " - " + err.message);
+    }
+    if (dataFile != "manual") {
+        mvConfig(dataFile);
+    }
 }
 
 // ****    read the file
@@ -407,4 +429,18 @@ var addNewInt = function() {
     console.log("about to add interface to list: " + newInt);
 
     addInterfaceToList(newInt, "manual");
+}
+
+var readInts = function() {
+    Neutralino.filesystem.readFile( 'interfaceInfo.conf',
+        function (data) {
+            let intArray = data.content.split(',');
+            localStorage.setItem("interfaceArray", intArray);
+
+            // call to update interface table
+        },
+        function () {
+            console.error('error');
+        }
+    );
 }
