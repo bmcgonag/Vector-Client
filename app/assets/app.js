@@ -157,7 +157,6 @@ var buildIfaceList = function () {
     let intArray = [];
     console.log("");
     console.log("    ----    Inside Build Interface List function");
-    // ****    get data from config.js wg_interface array
 
     // first we'll remove the options from the drop-down then rebuild it
     let iFaceList = document.getElementById("chooseIface");
@@ -166,29 +165,33 @@ var buildIfaceList = function () {
         iFaceList.options.remove(iFaceList.options.length - 1);
     }
 
-    Neutralino.filesystem.readFile("interfaceInfo.conf"),
+    Neutralino.filesystem.readFile("interfaceInfo.conf",
         function(data) {
-            intArray = data.content.split(',');
+            intArray = data.content.trim().split(',');
+            console.log("--- line 172 --- Int Array: " + intArray);
             localStorage.setItem("interfaceArray", intArray);
+
+            console.log(" - Interfaces are:");
+            console.log(intArray);
+            let iFaces = intArray;
+
+            // ****    find how many elements in the array
+            let iFaces_count = iFaces.length;
+            console.log("Interface Count = " + iFaces_count);
+
+            // ****    loop through elements and add them to the selection window
+            for (i=0; i < iFaces_count; i++) {
+                var x = document.getElementById("chooseIface");
+                var option = document.createElement("option");
+                option.text = iFaces[i];
+                x.add(option);
+            }
         },
         function() {
             console.log("Error: " + error);
         }
-    console.log(" - Interfaces are:");
-    console.log(intArray);
-    let iFaces = intArray;
-
-    // ****    find how many elements in the array
-    let iFaces_count = iFaces.length;
-    console.log("Interface Count = " + iFaces_count);
-
-    // ****    loop through elements and add them to the selection window
-    for (i=0; i < iFaces_count; i++) {
-        var x = document.getElementById("chooseIface");
-        var option = document.createElement("option");
-        option.text = iFaces[i];
-        x.add(option);
-    }
+    );
+    
 }
 
 // ****    when the app starts, check connectivity and connection status
@@ -248,26 +251,39 @@ var addInterfaceToList = function(interface, dataFile) {
     console.log("    ----    Inside Add Interface To List Function.");
     try {
         // get the current interface array
-        let intArray = localStorage.getItem("interfaceArray");
+        let intList = localStorage.getItem("interfaceArray");
         console.log("-----------------------------------");
-        console.log("intArray = " + intArray);
+        console.log("intList = " + intList);
+        intListStripSpaces = intList.trim();
+        intArray = intList.split(',');
+        console.log("  ****  Int Array is now: " + intArray);
 
         // add the new interface to the end of the array
         intArray.push(interface);
 
-        // turn our array into a comma separated string
-        for (i = 0; i < intArray.length; i++) {
-            newIntFile = newIntFile + intArray[i];
-        }
+        console.log("Updated Interface List: " + intArray);
+        console.log("-- New Int Array Length: " + intArray.length);
 
-        // write the new values out to our config file.
-        Neutralino.filesystem.writeFile('interfaceInfo.conf', newIntFile),
-            function (data) {
-                console.log(data);
-            },
-            function () {
-                console.error('error');
+        // turn our array into a comma separated string
+        for (i = 0; i < intArray.length; i++) { 
+            if (i == 0) {
+                newIntFile = intArray[i];
+            } else {
+                newIntFile = newIntFile + "," + intArray[i];
             }
+            console.log("New Int File: " + newIntFile);
+            if (i == intArray.length-1) {
+                // write the new values out to our config file.
+                Neutralino.filesystem.writeFile('interfaceInfo.conf', newIntFile,
+                    function (data) {
+                        console.log(data);
+                    },
+                    function () {
+                        console.error('error');
+                    }
+                );
+            }
+        }
     } catch (err) {
         console.log("Error: " + err.name + " - " + err.message);
     }
@@ -395,25 +411,38 @@ addInt.onclick = function() {
     addInterface.style.display = "block";
     connPage.style.display = "none";
     let Currenthtml = "";
+    let intArray = [];
 
     // remove interface table, and rebuild to make sure we have the correct (most up to date) list of interfaces
     var iFaceTbl = document.getElementById("iFaceTbl");
 
     // now build our table body
-    let iFaces = configs.wg_interface;
-    console.dir(iFaces);
-    let iFaces_count = iFaces.length;
-    console.log("length: " + iFaces_count);
-    for (i=0; i < iFaces_count; i++) {
-        console.log("trying to add interface for: " + iFaces[i]);
-        let html_to_insert = '<tr><td>' + iFaces[i] + '</td><td><span class="fa fa-trash"></span></td></tr>';
-        Currenthtml = Currenthtml + html_to_insert;
-        console.log(" - - " + [i] + " - " + Currenthtml);
-        if (i == iFaces_count-1) {
-            console.log("it's equal!");
-            iFaceTbl.innerHTML = Currenthtml;
+    Neutralino.filesystem.readFile( 'interfaceInfo.conf',
+        function (data) {
+            intList = data.content;
+            intArray = intList.trim().split(',');
+            console.log("Int Array for addInt On Click = " + intArray);
+            console.dir("iFaces = " + intArray);
+            let iFaces_count = intArray.length;
+            console.log("length: " + iFaces_count);
+            for (i=0; i < iFaces_count; i++) {
+                console.log("trying to add interface for: " + intArray[i]);
+                let html_to_insert = '<tr><td>' + intArray[i] + '</td><td><span class="fa fa-trash"></span></td></tr>';
+                Currenthtml = Currenthtml + html_to_insert;
+                console.log(" - - " + [i] + " - " + Currenthtml);
+                if (i == iFaces_count-1) {
+                    console.log("it's equal!");
+                    iFaceTbl.innerHTML = Currenthtml;
+                }
+            }
+        },
+        function () {
+            console.error('error');
         }
-    }
+    );
+
+    
+    
 }
 
 connectPg.onclick = function() {
@@ -429,18 +458,4 @@ var addNewInt = function() {
     console.log("about to add interface to list: " + newInt);
 
     addInterfaceToList(newInt, "manual");
-}
-
-var readInts = function() {
-    Neutralino.filesystem.readFile( 'interfaceInfo.conf',
-        function (data) {
-            let intArray = data.content.split(',');
-            localStorage.setItem("interfaceArray", intArray);
-
-            // call to update interface table
-        },
-        function () {
-            console.error('error');
-        }
-    );
 }

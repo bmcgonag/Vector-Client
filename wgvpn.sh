@@ -2,4 +2,4 @@
 
 cd /opt/Vector-Client
 
-./WireguardUI
+./Vector-Client
