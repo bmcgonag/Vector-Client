@@ -27,7 +27,9 @@ var onOff = function() {
     console.log("    ----    Inside Toggle On / Off function");
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
+    // console.log("Interface from UI: " + interfaceValue);
 
+    localStorage.setItem("selIndex", interfaceValue);
     var checkSpeed = null;
     let downspeed = 0;
     let downspeed1 = 0;
@@ -35,46 +37,19 @@ var onOff = function() {
     let upspeed = 0;
     let upspeed1 = 0;
     let upspeedTot = 0;
-    let selIndex = localStorage.getItem("selIndex");
 
     // alert("Interface Value: " + interfaceValue);
     if (isChecked == true) {
         Neutralino.os.runCommand('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue, 
             function (data) {
-                // console.log("Data from bringing up Wireguard Interface: ");
-                // console.dir(data);
-                checkConnection("toggle");
+                console.log("");
+                console.log("");
+                console.log("Data from bringing up Wireguard Interface: ");
+                console.dir(data);
+                console.log("");
+                console.log("");
 
-                // checkSpeed = window.setInterval(function() {
-                //     try {
-                //         Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/rx_bytes',
-                //             function(speedInfo) {
-                //                 console.log("---------------------");
-                //                 console.log(speedInfo.stdout);
-                //                 downspeed = speedInfo.stdout;
-                //                 console.log("Downspeed read: " + downspeed);
-                //                 downspeedTot = Math.floor(((downspeed - downspeed1)/102400)/2);
-                //                 console.log('Downspeed total: ' + downspeedTot);
-                //                 document.getElementById('speed').innerText = downspeedTot;
-                //                 downspeed1 = downspeed;
-                //             }
-                //         )
-    
-                //         Neutralino.os.runCommand('cat /sys/class/net/' + configs.wg_interface[selIndex] + '/statistics/tx_bytes',
-                //             function(upInfo) {
-                //                 console.log("-------------------");
-                //                 console.log(upInfo.stdout);
-                //                 upspeed = upInfo.stdout;
-                //                 upspeedTot = Math.floor(((upspeed - upspeed1)/102400)/2);
-                //                 document.getElementById('upspeed').innerText = upspeedTot;
-                //                 upspeed1 = upspeed;
-                //             }
-                //         )
-                //     } catch (error) {
-                //         console.log("Error on reading download / upload speed: " + error);
-                //     }
-                    
-                // }, 2000);
+                checkConnection("toggle");
             },
             function () {
                 console.error('error');
@@ -130,14 +105,25 @@ var checkConnection = function(reason) {
     console.log("");
     console.log("    ----    Inside Check Connection function");
     buildIfaceList();
-    let selIndex = localStorage.getItem("selIndex");
+    let selIndex = $("#chooseIface").val();
     if (typeof selIndex == 'undefined' || selIndex == null || selIndex == "") {
         selIndex = 0;
     }
+    console.log("");
+    console.log("ip addr show " + selIndex);
+    console.log("");
+    localStorage.setItem("selIndex", selIndex);
 
-    Neutralino.os.runCommand('ip addr show ' + configs.wg_interface[selIndex],
+    Neutralino.os.runCommand('ip addr show ' + selIndex,
         function(data) {
             let info = data.stdout;
+            // console.log("-- ####  --  #### --");
+            // console.log("");
+            // console.log("show ip addr command output: ");
+            // console.log(data);
+            // console.log("");
+            // console.log("-- ####  --  #### --");
+
             let inetStart = info.search('inet');
 
             if (inetStart >= 0) {
@@ -191,7 +177,7 @@ var buildIfaceList = function () {
             console.log("Error: " + error);
         }
     );
-    
+    return;
 }
 
 // ****    when the app starts, check connectivity and connection status
@@ -235,7 +221,6 @@ var importConfig = function() {
                     document.getElementById("changeInterfaceModal").style.display = "block";
                 } else {
                     console.log("No matching interface found.");
-                    addInterfaceToList(interface, data.file);
                 }
             }
         },
@@ -258,6 +243,9 @@ var addInterfaceToList = function(interface, dataFile) {
         intArray = intList.split(',');
         console.log("  ****  Int Array is now: " + intArray);
 
+        let Currenthtml = "";
+        let iFaceTbl = document.getElementById("iFaceTbl");
+
         // add the new interface to the end of the array
         intArray.push(interface);
 
@@ -271,9 +259,15 @@ var addInterfaceToList = function(interface, dataFile) {
             } else {
                 newIntFile = newIntFile + "," + intArray[i];
             }
+
+            let html_to_insert = '<tr><td>' + intArray[i] + '</td><td><span class="fa fa-trash"></span></td></tr>';
+            Currenthtml = Currenthtml + html_to_insert;
+            console.log(" - - " + [i] + " - " + Currenthtml);
+
             console.log("New Int File: " + newIntFile);
             if (i == intArray.length-1) {
                 // write the new values out to our config file.
+                localStorage.setItem("interfaceArray", newIntFile);
                 Neutralino.filesystem.writeFile('interfaceInfo.conf', newIntFile,
                     function (data) {
                         console.log(data);
@@ -282,8 +276,13 @@ var addInterfaceToList = function(interface, dataFile) {
                         console.error('error');
                     }
                 );
+
+                console.log("-##---##-  It's equal!");
+                iFaceTbl.innerHTML = Currenthtml;
             }
         }
+
+        buildIfaceList();
     } catch (err) {
         console.log("Error: " + err.name + " - " + err.message);
     }
@@ -338,8 +337,12 @@ var getValueChosen = function() {
     let interfaceValue = document.querySelector('#selectInterface option:checked').textContent;
     console.log("Interface Selected: " + interfaceValue);
     let sel = document.getElementById('chooseIface');
+
+    // TODO
+    // why am i doing the line below?  I don't know
     let interfaceIndex = sel.selectedIndex;
-    localStorage.setItem("selIndex", interfaceIndex);
+    
+    localStorage.setItem("selIndex", interfaceValue);
 }
 
 // ****    If the user enters a new interface name during import - get it
@@ -455,6 +458,8 @@ connectPg.onclick = function() {
 
 var addNewInt = function() {
     let newInt = document.getElementById("exInterfaceName").value;
+    let input = document.getElementById("exInterfaceName");
+    input.innerHTML = '';
     console.log("about to add interface to list: " + newInt);
 
     addInterfaceToList(newInt, "manual");
