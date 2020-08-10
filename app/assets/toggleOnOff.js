@@ -4,6 +4,9 @@ var onOff = function() {
     console.log("    ----    Inside Toggle On / Off function");
     let isChecked = document.getElementById("toggleOnOrOff").checked;
     let interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
+    if (interfaceValue == null || typeof interfaceValue == 'undefined') {
+        interfaceValue = document.querySelector('#chooseIface option:checked').textContent;
+    }
     console.log("Interface from UI: " + interfaceValue);
 
     localStorage.setItem("selIndex", interfaceValue);
@@ -19,11 +22,14 @@ var onOff = function() {
         function(data) {
             let pwfile = data.content;
             let pwarray = pwfile.split(':');
-            let pw = pwarray[1];
+            let pw = pwarray[1].trim();
             console.log("pw is: " + pw);
 
             // alert("Interface Value: " + interfaceValue);
             console.log("Interface Value: " + interfaceValue);
+            console.log("Command is ----------------------------------: ");
+            console.log('echo ' + pw + ' | sudo -S wg-quick up ' + interfaceValue);
+            console.log('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue);
             if (isChecked == true) {
                 Neutralino.os.runCommand('echo ' + pw + ' | sudo -S wg-quick up ' + interfaceValue, 
                     function (data) {
