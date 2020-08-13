@@ -293,8 +293,12 @@ addInt.onclick = function() {
     console.log("Clicked Add Interface Page");
     let connPage = document.getElementById("connectPage");
     let addInterface = document.getElementById("addInterfacePage");
+    let settPage = document.getElementById("settingsPage");
+    let importIFace = document.getElementById("importInterface");
+    settPage.style.display = "none";
     addInterface.style.display = "block";
     connPage.style.display = "none";
+    importIFace.style.display = "none";
     let Currenthtml = "";
     let intArray = [];
 
@@ -325,17 +329,18 @@ addInt.onclick = function() {
             console.error('error');
         }
     );
-
-    
-    
 }
 
 connectPg.onclick = function() {
     console.log("Clicked Connect Page");
     let connPage = document.getElementById("connectPage");
     let addInterface = document.getElementById("addInterfacePage");
+    let settPage = document.getElementById("settingsPage");
+    let importIFace = document.getElementById("importInterface");
+    settPage.style.display = "none";
     connPage.style.display = "block";
     addInterface.style.display = "none";
+    importIFace.style.display = "none";
 }
 
 var addNewInt = function() {
@@ -345,4 +350,28 @@ var addNewInt = function() {
     console.log("about to add interface to list: " + newInt);
 
     addInterfaceToList(newInt, "manual");
+}
+
+settings.onclick = function() {
+    console.log("clicked Settings page.");
+    let connPage = document.getElementById("connectPage");
+    let addInterface = document.getElementById("addInterfacePage");
+    let settPage = document.getElementById("settingsPage");
+    let importIFace = document.getElementById("importInterface");
+    settPage.style.display = "block";
+    connPage.style.display = "none";
+    addInterface.style.display = "none";
+    importIFace.style.display = "none";
+}
+
+importInterfaceIcon.onclick = function() {
+    console.log("clicked import interface icon.");
+    let connPage = document.getElementById("connectPage");
+    let addInterface = document.getElementById("addInterfacePage");
+    let settPage = document.getElementById("settingsPage");
+    let importIFace = document.getElementById("importInterface");
+    settPage.style.display = "none";
+    connPage.style.display = "none";
+    addInterface.style.display = "none";
+    importIFace.style.display = "block";
 }

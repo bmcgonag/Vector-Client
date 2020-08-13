@@ -39,14 +39,16 @@ SOFTWARE. -->
     <script src="/assets/checkIfaceIP.js"></script>
     <script src="/assets/checkConnection.js"></script>
     <script src="/assets/toggleOnOff.js"></script>
+    <script src="/assets/saveSettings.js"></script>
   </head>
 
   <body>
 
     <div class="sidenav">
-      <a href="#" class="fa fa-home" aria-hidden="true" id="connectPg"></a>
-      <a href="#" class="fa fa-plus" aria-hidden="true" id="addInt"></a>
-      <a href="#" class="fa fa-cog" aria-hidden="true" id="settings"></a>
+      <a href="#" title="Connect" class="fa fa-home" aria-hidden="true" id="connectPg"></a>
+      <a href="#" title="Add Interface Name" class="fa fa-plus" aria-hidden="true" id="addInt"></a>
+      <a href="#" title="Import Interface" class="fa fa-file-import" aria-hidden="true" id="importInterfaceIcon"></a>
+      <a href="#" title="Settings" class="fa fa-cog" aria-hidden="true" id="settings"></a>
     </div>
 
     <div class="main">
@@ -107,6 +109,34 @@ SOFTWARE. -->
     </div>
 
     <table id="iFaceTbl"></table>
+  </div>
+
+  <!-- Settings Area -->
+  <div class="settingsPage" id="settingsPage">
+    <h3>Settings</h3>
+    <p>WireGuard requires admin / super user privileges in order to bring up or take down the VPN interface.  Please enter your super user password below.  This is only saved and used locally.</p>
+    <div class="row">
+      <div class="column">
+        <label for="suPw">Sudo Password</label>
+        <input type="password" class="dark-mode" id="suPw" placeholder="Sudo Password..." />
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <a href="#" class="button" id="saveSettings" onclick="saveSettings()">Save</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Interface Area -->
+  <div class="importInterface" id="importInterface">
+    <h3>Import Interface</h3>
+    <p>This section is used to import / add an interface file, downloaded from a WireGuard server, to the Vector client application.</p>
+    <div class="row">
+      <div class="column">
+        <a href="#" class="button" id="importNow" onclick="importInterface()">Select Interface</a>
+      </div>
+    </div>
   </div>
 
   <!-- Section below if for pop-up message to ask if the user wants to change the interface name. -->
