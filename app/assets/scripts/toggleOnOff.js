@@ -70,6 +70,4 @@ var onOff = function() {
             console.log("Error in readfile for pw: " + error);
         }
     )
-
-    
 }

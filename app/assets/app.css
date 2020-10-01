@@ -67,3 +67,13 @@ button {
 .red-text {
     color: red;
 }
+
+.delInt {
+    cursor: pointer;
+    color: red;
+}
+
+.delInt:hover {
+    background: red;
+    color: #000000;
+}

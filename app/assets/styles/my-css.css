@@ -230,3 +230,7 @@ input:checked + .slider:before {
 .settingsPage {
   display: none;
 }
+
+.importInterface {
+  display: none;
+}

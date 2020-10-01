@@ -10,7 +10,7 @@
         "fullscreen": false,
         "alwaysontop": false,
         "iconfile": "Vector_Logo.png",
-        "enableinspector": false,
+        "enableinspector": true,
         "borderlesswindow": false
     }
 }
