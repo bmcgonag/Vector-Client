@@ -29,7 +29,6 @@ var onOff = function() {
             console.log("Interface Value: " + interfaceValue);
             console.log("Command is ----------------------------------: ");
             console.log('echo ' + pw + ' | sudo -S wg-quick up ' + interfaceValue);
-            console.log('echo ' + configs.sudo_user_pass + ' | sudo -S wg-quick up ' + interfaceValue);
             if (isChecked == true) {
                 Neutralino.os.runCommand('echo ' + pw + ' | sudo -S wg-quick up ' + interfaceValue, 
                     function (data) {
